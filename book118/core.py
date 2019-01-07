@@ -57,7 +57,11 @@ class book118:
             'readLimit': self.pdfInfo['ReadLimit'],
             'furl': self.pdfInfo['Furl']
         })
-        result = getHTML(url)
+        try:
+            result = getHTML(url)
+        except:
+            result = getHTML(url)
+        
         res = json.loads(result)
 
         if self.total == 0:
@@ -75,8 +79,11 @@ class book118:
         os.makedirs('./temp')
 
         for (idx, img) in enumerate(self.imgList):
-            res = getHTML(
-                makeURL('http://' + self.domain + '.book118.com/img/?', {'img': img}), byte=True)
+            url = makeURL('http://' + self.domain + '.book118.com/img/?', {'img': img})
+            try:
+                res = getHTML(url, byte=True)
+            except:
+                res = getHTML(url, byte=True)
             with open('./temp/' + str(idx + 1) + '.jpg', 'wb') as f:
                 f.write(res)
             print(idx + 1, '/', self.total,

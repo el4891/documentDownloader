@@ -1,4 +1,6 @@
 import book118
+import sys
 
 if __name__ == '__main__':
-    book118.getPDF(137343582)
+    id = int(sys.argv[1])
+    book118.getPDF(id)
