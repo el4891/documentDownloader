@@ -22,10 +22,17 @@ class book118:
         print(self.pdfInfo)
         #　获得所有图片的地址
         while self.index != self.total:
-            self.__getNextPage(
-                self.imgList[-1]
-                if len(self.imgList) != 0 else self.pdfInfo['Img']
-            )
+            if len(self.imgList) == 0 and ('Img' not in self.pdfInfo.keys()):
+                index = 0 if self.index < 0 else self.index
+                url = self.__getNextPageUrl2(index)
+
+            else:
+                url = self.__getNextPageUrl(
+                    self.imgList[-1]
+                    if len(self.imgList) != 0 else self.pdfInfo['Img']
+                )
+
+            self.__getNextPage(url)
         # 下载图片
         self.__getIMG()
         # 生成pdf
@@ -48,7 +55,7 @@ class book118:
         for lst in res:
             self.pdfInfo[lst[0]] = lst[1]
 
-    def __getNextPage(self, imgUrl):
+    def __getNextPageUrl(self, imgUrl):
         url = makeURL('https://' + self.domain + '.book118.com/pdf/GetNextPage/?', {
             'f': self.pdfInfo['Url'],
             'img': imgUrl,
@@ -57,6 +64,24 @@ class book118:
             'readLimit': self.pdfInfo['ReadLimit'],
             'furl': self.pdfInfo['Furl']
         })
+        return url
+
+    def __getNextPageUrl2(self, sn):
+        #https://view81.book118.com/PW/GetPage?f=dXAxNC0yLmJvb2sxMTguY29tLjgwXDQyOTc2OTUtNWI3YWEzNjBkOWM1Yi5wZGY=&img=&isMobile=false&readLimit=bJM31kWS6BrgH4xjKQL_0w==&sn=0&furl=o4j9ZG7fK95dS7wYrAN0MnYqzG1T0OIsJHGIUe54h13R6@kUibFpZKrUNkicV2NR2IH2y_3vZEuikVjZUp3Iz3Ry@u8Hmx60CGT0PLL@bUDLLuOuNvZ7Rw==
+        #https://view81.book118.com/PW/GetPage?f=dXAxNC0yLmJvb2sxMTguY29tLjgwXDQyOTc2OTUtNWI3YWEzNjBkOWM1Yi5wZGY=&img=7o@o7xcocmktXwDypvIH900SNkQEw@wGz0AI70EEqtK00nqcPXaQeneYOQjm2CKp58hjmw1sezY=&isMobile=false&readLimit=bJM31kWS6BrgH4xjKQL_0w==&sn=1&furl=o4j9ZG7fK95dS7wYrAN0MnYqzG1T0OIsJHGIUe54h13R6@kUibFpZKrUNkicV2NR2IH2y_3vZEuikVjZUp3Iz3Ry@u8Hmx60CGT0PLL@bUDLLuOuNvZ7Rw==
+        url = makeURL('https://' + self.domain + '.book118.com/PW/GetPage?', {
+            'f': self.pdfInfo['Url'],
+            'isMobile': 'false',
+            'isNet': 'True',
+            'sn' : str(sn),
+            'readLimit': self.pdfInfo['ReadLimit'],
+            'furl': self.pdfInfo['Furl']
+        })
+        return url
+
+
+    def __getNextPage(self, url):
+        print('url  ' + url)
         try:
             result = getHTML(url)
         except:
